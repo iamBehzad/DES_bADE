@@ -134,7 +134,7 @@ class DES_MHA:
         # Use a pool of workers to parallelize the prediction
         with Pool(processes=6) as pool:  # Adjust processes to the number of cores
             predictions = pool.map(self.predict, X_test)  # Distribute the workload
-        
+        predictions = [int(p) for p in predictions]
         # Calculate accuracy
         acc = accuracy_score(y_test, predictions)
         print(f'accuracy = {acc}')
