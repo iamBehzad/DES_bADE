@@ -1,3 +1,6 @@
+from mealpy import Optimizer
+import numpy as np
+
 class ADE(Optimizer):
     """
     This is an example how to build new optimizer
