@@ -1,5 +1,6 @@
 from imports import *
 from ADE import ADE
+np.random.seed(12345)
 
 class MyProblem(Problem):
     def __init__(self, data, **kwargs):
@@ -27,10 +28,17 @@ class MyProblem(Problem):
         avg_profile = np.mean([np.sum(self.X_test_profile[0] * self.neighbor_profiles[0][i])for i in competence_region])
         selected_profiles = self.neighbor_profiles[0][competence_region]
         avg_div = np.mean(pairwise_distances(selected_profiles, metric='euclidean'))
-
+        
+        # Static normalization
+        n_classifiers = selected_profiles.shape[1]
+        norm_avg_dist = avg_dist  # Already in range [0, 1]
+        norm_avg_conf = avg_conf / n_classifiers
+        norm_avg_profile = avg_profile / n_classifiers
+        norm_avg_div = avg_div / np.sqrt(n_classifiers)  # Normalize based on feature dimension
+        
         # Weights for the fitness components
-        w1, w2, w3, w4 = 0.1, 0.2, 0.2, 0.4
-        fitness = w1 * avg_dist + w2 * avg_conf + w3 * avg_profile + w4 * avg_div
+        w1, w2, w3, w4 = 0.1, 0.2, 0.3, 0.4
+        fitness = w1 * norm_avg_dist + w2 * norm_avg_conf + w3 * norm_avg_profile + w4 * norm_avg_div
         #fitness = w2 * avg_conf + w3 * avg_profile 
 
         return fitness
@@ -75,13 +83,10 @@ class DES_MHA:
         # **Method 1: Test-Sample Based **
         # Uncomment this block for Test-Sample Based method
         # -------------------------------------------------
-        #X_test_conf = np.array([clf.predict_proba(X_test) for clf in self.pool_classifiers])
-        #X_test_conf = np.transpose(X_test_conf, (1, 0, 2))  # Reshape to (1, n_classifiers, n_classes)
-        #X_test_profile = np.array([clf.predict(X_test) for clf in self.pool_classifiers])
-        X_test_conf, X_test_profile = zip(*[  
-                (clf.predict_proba(X_test), clf.predict(X_test)) for clf in self.pool_classifiers])
+        X_test_conf = np.array([clf.predict_proba(X_test) for clf in self.pool_classifiers])
+        X_test_conf = np.transpose(X_test_conf, (1, 0, 2))  # Reshape to (1, n_classifiers, n_classes)
+        X_test_profile = np.array([clf.predict(X_test) for clf in self.pool_classifiers])
         # -------------------------------------------------
-
         # **Method 2: Neighbor-Averaged **
         # Uncomment this block for Neighbor-Averaged method
         # -------------------------------------------------
@@ -110,7 +115,7 @@ class DES_MHA:
             data = data,
             name="DES",
             minmax = "max",
-            log_to = "console" # None,"console"
+            log_to = None # None,"console"
         )
         model = GWO.OriginalGWO(epoch=100, pop_size=50)  # Metaheuristic optimization
         g_best = model.solve(problem)

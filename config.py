@@ -2,7 +2,7 @@ datasets = {
     #     Data set of DGA1033 report
 #    "Adult",
 #    "Banana",
-#   "Heart",
+   "Heart",
 #    "ILPD",
 #   "Vehicle",
 #    "Glass",
@@ -28,7 +28,7 @@ datasets = {
 #    "Monk2",
 #    "Phoneme",
 #    "Pima",
-    "Sonar",
+#    "Sonar",
 #    "Statlog",
 #    "Steel",
 #    "Thyroid",

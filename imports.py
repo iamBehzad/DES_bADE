@@ -39,7 +39,6 @@ from mealpy.utils.problem import Problem
 
 from multiprocessing import Pool
 
-np.random.seed(12345)
 
 warnings.filterwarnings("ignore")
 
