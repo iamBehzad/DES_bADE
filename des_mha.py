@@ -117,7 +117,7 @@ class DES_MHA:
             minmax = "max",
             log_to = None # None,"console"
         )
-        model = GWO.OriginalGWO(epoch=100, pop_size=50)  # Metaheuristic optimization
+        model = ADE(epoch=100, pop_size=50)  # Metaheuristic optimization
         g_best = model.solve(problem)
 
         mask = self.amend_position(g_best.solution)

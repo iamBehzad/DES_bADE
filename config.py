@@ -6,8 +6,8 @@ datasets = {
 #    "ILPD",
 #   "Vehicle",
 #    "Glass",
-#    "Pima",
-#    "Sonar",
+#   "Pima",
+#   "Sonar",
 #    "Ecoli"
 #    "Wine"
 #    "Audit",
