@@ -1,9 +1,11 @@
 from imports import *
 from ADE import ADE
+from TransferFunctions import TransferFunctions 
 np.random.seed(12345)
 
 class MyProblem(Problem):
     def __init__(self, data, **kwargs):
+        self.tf = TransferFunctions()
         self.X_test_conf = data["X_test_conf"]
         self.X_test_profile = data["X_test_profile"]
         self.neighbor_indices = data["neighbor_indices"]
@@ -13,7 +15,8 @@ class MyProblem(Problem):
         super().__init__(**kwargs)
 
     def amend_position(self, solution):
-        mask = np.random.uniform(0, 1, len(solution)) < solution
+        tf_solution = self.tf.vstf_01(solution)
+        mask = np.random.uniform(0, 1, len(tf_solution)) < tf_solution
         if np.sum(mask) == 0:  # Ensure at least one classifier is selected
             mask[np.random.randint(0, len(mask))] = 1
         return mask.astype(int)
@@ -117,8 +120,10 @@ class DES_MHA:
             minmax = "max",
             log_to = None # None,"console"
         )
-        model = ADE(epoch=100, pop_size=50)  # Metaheuristic optimization
-        g_best = model.solve(problem)
+        term_dict = {"max_early_stop": 300 } # after 30 epochs, if the global best doesn't improve then we stop the program
+        model = ADE(epoch=300, pop_size=50)  # Metaheuristic optimization
+        g_best = model.solve(problem, termination=term_dict)
+        #g_best = model.solve(problem)
 
         mask = self.amend_position(g_best.solution)
         competence_region = np.where(mask == 1)[0]

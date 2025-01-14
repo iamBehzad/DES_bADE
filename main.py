@@ -1,6 +1,6 @@
 from imports import *
 
-config.OTHERS = False
+config.OTHERS = True
 if __name__ == "__main__":
     # =============================== Other Methods ===============================
     if config.OTHERS:
