@@ -47,8 +47,25 @@ def save_results2(tec_name, datasetName, accuracy, labels, yhat):
         'Labels': labels,
         'Predictions': yhat
     })
-    excel_path = os.path.join(config.ExperimentPath, "Results_xls", datasetName, f"{tec_name}_{datasetName}_results.xlsx")
-    df.to_excel(excel_path, index=False, engine='openpyxl')
+    # Set the directory where the file will be created  
+    directory = os.path.join(config.ExperimentPath, "Results_xls", datasetName)  
+    os.makedirs(directory, exist_ok=True)  
+
+    # Set the base filename  
+    base_filename = f"{tec_name}_{datasetName}_results.xlsx"  
+    base_filename_with_path = os.path.join(directory, base_filename)  
+
+    # Check if the file already exists  
+    i = 1  
+    new_filename = base_filename_with_path  
+    while os.path.exists(new_filename):  
+        # Generate a unique filename by appending a number  
+        new_filename = os.path.join(directory, f"{os.path.splitext(base_filename)[0]}_{i}{os.path.splitext(base_filename)[1]}")  
+        i += 1  
+
+    # Save the DataFrame to the new file  
+    df.to_excel(new_filename, index=False, engine='openpyxl')  
+
 
 def pool_generator(datasetName):
     state = 0
@@ -139,11 +156,25 @@ def collecting_results():
         df.loc['mean'] = mean
         df.loc['std'] = std
         df.loc['rank'] = rank
-        save_path = config.ExperimentPath + '/Results_xls/' + d + '/'
-        writer = pd.ExcelWriter(save_path + d + "_accuracy_results.xlsx")
-        df.to_excel(writer)
-        writer.close()  # Use close() instead of save()
-        
+        # Set the directory where the file will be created  
+        directory = os.path.join(config.ExperimentPath, 'Results_xls', d)  
+        os.makedirs(directory, exist_ok=True)  
+
+        # Set the base filename  
+        base_filename = f"{d}_accuracy_results.xlsx"  
+        base_filename_with_path = os.path.join(directory, base_filename)  
+
+        # Check if the file already exists  
+        i = 1  
+        new_filename = base_filename_with_path  
+        while os.path.exists(new_filename):  
+            # Generate a unique filename by appending a number  
+            new_filename = os.path.join(directory, f"{os.path.splitext(base_filename)[0]}_{i}{os.path.splitext(base_filename)[1]}")  
+            i += 1  
+
+        # Save the DataFrame to the new file  
+        with pd.ExcelWriter(new_filename) as writer:  
+            df.to_excel(writer, index=True)  
         
 # ================================= Other DES Methods Helpers ==========================================
 

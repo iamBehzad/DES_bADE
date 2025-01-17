@@ -161,3 +161,7 @@ cython_debug/
 
 
 /Experiment
+/Experiment_DESKNN-based_Manupulated
+/Experiment_DESKNN-based_Original
+/Experiment_KnoraE-based_Original
+*.rar
