@@ -52,7 +52,7 @@ class DES_MHA:
         self.n_classifiers = len(self.pool_classifiers)
         self.k = k
         self.nn = NearestNeighbors(n_neighbors=self.k)
-        self.knorae = KNORAE(self.pool_classifiers, k=self.k)
+        self.desknn = DESKNN(self.pool_classifiers, k=self.k)
 
         self.X_DSEL = None
         self.y_DSEL = None
@@ -69,7 +69,7 @@ class DES_MHA:
         self.X_DSEL = X_DSEL
         self.y_DSEL = y_DSEL
         self.nn.fit(X_DSEL)
-        self.knorae.fit(X_DSEL, y_DSEL)
+        self.desknn.fit(X_DSEL, y_DSEL)
 
         self.probabilities = np.array([clf.predict_proba(self.X_DSEL) for clf in self.pool_classifiers])
         self.probabilities = np.transpose(self.probabilities, (1, 0, 2))  # Reshape to (n_samples, n_classifiers, n_classes)
@@ -134,13 +134,11 @@ class DES_MHA:
         X_test = X_test if X_test.ndim > 1 else X_test.reshape(1, -1)
         data = self.compute_metrics(X_test)
         competence_region = self.estimate_competence(data)
-        competence_region_indices = data["neighbor_indices"][:,competence_region]
-        competence_region_distances = data["neighbor_distances"][:,competence_region]
-        competences = self.knorae.estimate_competence(
-            competence_region=competence_region_indices,
-            distances = competence_region_distances,
+        competence_region = data["neighbor_indices"][:,competence_region]
+        competences, diversity = self.desknn.estimate_competence(
+            competence_region=competence_region,
             predictions=self.predictions.reshape(-1, self.n_classifiers))
-        selected_classifiers = self.knorae.select(competences)
+        selected_classifiers = self.desknn.select(competences, diversity)
         final_classifiers = [self.pool_classifiers[i] for i in selected_classifiers[0]]
         final_predictions = [clf.predict(X_test)[0] for clf in final_classifiers]
         majority_votes = mode(final_predictions)[0]
