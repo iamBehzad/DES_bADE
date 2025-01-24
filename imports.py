@@ -15,6 +15,10 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import pairwise_distances
 
+import matplotlib.pyplot as plt
+from scipy.stats import wilcoxon, friedmanchisquare
+import seaborn as sns
+
 from deslib.dcs import LCA
 from deslib.dcs import MLA
 from deslib.dcs import OLA
