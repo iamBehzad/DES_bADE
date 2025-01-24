@@ -31,6 +31,8 @@ from deslib.util.datasets import make_P2
 
 from scipy.spatial.distance import cdist
 from scipy.stats import mode
+from scipy.stats import binom
+
 import scipy.io as sio
 import time
 import os

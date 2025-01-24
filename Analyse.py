@@ -38,6 +38,18 @@ def calculate_win_tie_loss(data, target_method, methods):
                 summary["Losses"].append(losses)
     return pd.DataFrame(summary)
 
+
+def critical_value(n=30, p=0.5, alpha=0.05):
+    '''
+     the critical value for a two-tailed binomial test at a significance level of 
+        α=0.05 with n=30 trials and a null hypothesis that the probability of a win p=0.5
+    '''
+    # Find k_upper such that P(X >= k_upper) <= alpha/2
+    k_upper = binom.ppf(1 - alpha/2, n, p)
+    return k_upper
+
+
+
 def save_win_tie_loss_plot(summary, dataset_name, save_dir="./Results"):
     """
     Saves the win-tie-loss summary plot as a high-quality image.
@@ -51,6 +63,16 @@ def save_win_tie_loss_plot(summary, dataset_name, save_dir="./Results"):
     #plt.grid(axis="y")
     plt.xticks(rotation=0)
     
+    # Compute critical value for alpha=0.05 (binomial distribution or approximate threshold)
+    # Total number of datasets used for the comparison
+    n = len(config.datasets)
+    p = 0.5
+    alpha = 0.05
+    cv = critical_value( n, p, alpha)
+    print(f"Critical Value for N={n}, alpha={alpha}: {cv:.2f}")
+
+      # Add critical value line
+    plt.axhline(y=cv, color="red", linestyle="--", label=f"Critical Value ({alpha=})")
     
     # Display values on their respective sections of the bars  
     for i in range(len(grouped)):  
