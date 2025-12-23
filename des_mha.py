@@ -28,7 +28,7 @@ class MyProblem(Problem):
         # Compute metrics for the competence region
         avg_dist = 1 - np.mean(self.neighbor_distances[0][competence_region])
         avg_conf = np.mean([np.sum(self.X_test_conf[0] * self.neighbor_conf[0][i])for i in competence_region])
-        avg_profile = np.mean([np.sum(self.X_test_profile[0] * self.neighbor_profiles[0][i])for i in competence_region])
+        avg_profile = np.mean([np.sum(self.X_test_profile[0] == self.neighbor_profiles[0][i]) for i in competence_region])
         selected_profiles = self.neighbor_profiles[0][competence_region]
         avg_div = np.mean(pairwise_distances(selected_profiles, metric='euclidean'))
         
